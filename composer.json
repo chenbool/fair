@@ -1,0 +1,29 @@
+{
+    "name": "bool/fair",
+    "description": "the Bool Framework",
+    "type": "framework",
+    "keywords": ["framework","Bool","ORM"],
+    "license": "Apache2",
+    "authors": [
+        {
+            "name": "bool",
+            "email": "30024167@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "app\\": "fair/",
+            "app\\help\\": "help"
+        }
+    }
+
+}
