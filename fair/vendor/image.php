@@ -34,8 +34,9 @@ class Image {
     protected $isSourceImage = true;
 
     /**
-     * Constructor of this class
-     * @param string $image (path to image)
+     * 构造函数
+     * @param string $image 图片路径
+     * @param bool $isSourceImage 是否为源图片
      */
     public function __construct($image, $isSourceImage=true)
     {
@@ -56,8 +57,7 @@ class Image {
     }
 
     /**
-     * Destructor of this class
-     * @param string $image (path to image)
+     * 析构函数
      */
     public function __destruct()
     {
@@ -67,8 +67,8 @@ class Image {
     }
 
     /**
-     * Sets response expiry header value
-     * @param integer $expires (seconds)
+     * 设置缓存过期时间
+     * @param int $expires 过期时间(秒)
      */
     public function setExpires($expires=0){
         $this->expires = intval($expires);
@@ -97,12 +97,12 @@ class Image {
     }
 
     /************************************
-    /* SETTERS
+    /* 设置器 (SETTERS)
     /************************************
 
     /**
-     * Sets path to temp files
-     * @param string $path
+     * 设置临时文件目录
+     * @param string $path 目录路径
      */
     public function setPathToTempFiles($path)
     {
@@ -114,8 +114,8 @@ class Image {
     }
 
     /**
-     * Sets new image type
-     * @param string $newFileType (jpeg, png, bmp, gif, vnd.wap.wbmp, xbm)
+     * 设置新文件类型
+     * @param string $newFileType 文件类型 (jpeg, png, bmp, gif, vnd.wap.wbmp, xbm)
      */
     public function setNewFileType($newFileType)
     {
@@ -125,8 +125,8 @@ class Image {
     }
 
     /**
-     * Sets new main image
-     * @param string $pathToImage
+     * 设置新的主图片
+     * @param string $pathToImage 图片路径
      */
     protected function setNewMainImage($pathToImage)
     {
@@ -137,31 +137,18 @@ class Image {
     }
 
     /************************************
-    /* ACTIONS
+    /* 操作 (ACTIONS)
     /************************************
 
     /**
-     * Resizes an image
-     * Some portions of this function as found on
-     * http://www.bitrepository.com/resize-an-image-keeping-its-aspect-ratio-using-php-and-gd.html
-     * @param int $max_width
-     * @param int $max_height
-     * @param string $method
-     *               fit = Fits image into width and height while keeping original aspect ratio. Expect your image not to use the full area.
-     *               crop = Crops image to fill the area while keeping original aspect ratio. Expect your image to get, well, cropped.
-     *               fill = Fits image into the area without taking care of any ratios. Expect your image to get deformed.
-     *
-     * @param string $cropAreaLeftRight
-     *               l = left
-     *               c = center
-     *               r = right
-     *               array( x-coordinate, width)
-     *
-     * @param string $cropAreaBottomTop
-     *               t = top
-     *               c = center
-     *               b = bottom
-     *               array( y-coordinate, height)
+     * 调整图片大小
+     * @param int $max_width 最大宽度
+     * @param int $max_height 最大高度
+     * @param string $method 调整方式: fit(适应), crop(裁剪), fill(填充)
+     * @param string $cropAreaLeftRight 裁剪区域水平位置: l(左), c(中), r(右)
+     * @param string $cropAreaBottomTop 裁剪区域垂直位置: t(上), c(中), b(下)
+     * @param int $jpgQuality JPG 质量
+     * @param bool $enlarge 是否放大
      */
     public function resize($max_width, $max_height, $method="fit", $cropAreaLeftRight="c", $cropAreaBottomTop="c", $jpgQuality=75, $enlarge=false)
     {
@@ -288,7 +275,8 @@ class Image {
     }
 
     /**
-     * Adds a watermark
+     * 添加水印图片
+     * @param string $imageWatermark 水印图片路径
      */
     public function addWatermark($imageWatermark)
     {
@@ -300,20 +288,12 @@ class Image {
 
 
     /**
-     * Writes Watermark to the File
-     * @param int $oapcity
-     * @param int $marginH (margin in pixel from base image horizontally)
-     * @param int $marginV (margin in pixel from base image vertically)
-     *
-     * @param string $positionWatermarkLeftRight
-     *                  l = left
-     *               c = center
-     *               r = right
-     *
-     * @param string $positionWatermarkTopBottom
-     *                  t = top
-     *               c = center
-     *               b = bottom
+     * 写入水印到图片文件
+     * @param int $opacity 透明度 (0-100)
+     * @param int $marginH 水平边距 (像素)
+     * @param int $marginV 垂直边距 (像素)
+     * @param string $positionWatermarkLeftRight 水印水平位置: l(左), c(中), r(右)
+     * @param string $positionWatermarkTopBottom 水印垂直位置: t(上), c(中), b(下)
      */
     public function writeWatermark($opacity=50, $marginH=0, $marginV=0, $positionWatermarkLeftRight="c", $positionWatermarkTopBottom="c")
     {
@@ -375,7 +355,9 @@ class Image {
     }
 
     /**
-     * Roates an image
+     * 旋转图片
+     * @param int $degrees 旋转角度
+     * @param int $jpgQuality JPG 质量
      */
     public function rotate($degrees, $jpgQuality=75)
     {
@@ -405,7 +387,7 @@ class Image {
     }
 
     /**
-     * Sends image data to browser
+     * 输出图片到浏览器
      */
     public function display()
     {
@@ -420,7 +402,12 @@ class Image {
     }
 
     /**
-     * Prints html code to display image
+     * 输出 HTML 图片标签到浏览器
+     * @param string $alt alt 属性
+     * @param string $title title 属性
+     * @param string $class class 属性
+     * @param string $id id 属性
+     * @param string $extras 额外属性
      */
     public function displayHTML($alt=false, $title=false, $class=false, $id=false, $extras=false)
     {
@@ -428,7 +415,13 @@ class Image {
     }
 
     /**
-     * Creates html code to display image
+     * 生成 HTML 图片标签
+     * @param string $alt alt 属性
+     * @param string $title title 属性
+     * @param string $class class 属性
+     * @param string $id id 属性
+     * @param string $extras 额外属性
+     * @return string HTML 标签
      */
     public function getHTML($alt=false, $title=false, $class=false, $id=false, $extras=false)
     {
@@ -446,7 +439,11 @@ class Image {
     }
 
     /**
-     * Saves image to file
+     * 保存图片到文件
+     * @param string $filename 文件名
+     * @param string $path 保存路径
+     * @param string $extension 文件扩展名
+     * @return bool 保存是否成功
      */
     public function save($filename, $path="", $extension="")
     {
@@ -477,12 +474,12 @@ class Image {
     }
 
     /************************************
-    /* CHECKERS
+    /* 检测器 (CHECKERS)
     /************************************
 
     /**
-     * Checks whether image is RGB
-     * @return bool
+     * 检查是否为 RGB 颜色模式
+     * @return bool 是否为 RGB
      */
     public function isRGB()
     {
@@ -493,8 +490,8 @@ class Image {
     }
 
     /**
-     * Checks whether image is RGB
-     * @return bool
+     * 检查是否为 CMYK 颜色模式
+     * @return bool 是否为 CMYK
      */
     public function isCMYK()
     {
@@ -505,11 +502,11 @@ class Image {
     }
 
     /**
-     * Checks ratio width:height
-     * Examples:
-     * Ratio must be 4:3 > checkRatio(4,3)
-     * Ratio must be 4:3 or 3:4 > checkRatio(4,3, true)
-     * @return bool
+     * 检查宽高比是否符合要求
+     * @param int $ratio1 宽度比
+     * @param int $ratio2 高度比
+     * @param bool $ignoreOrientation 是否忽略方向
+     * @return bool 是否符合比例
      */
     public function checkRatio($ratio1, $ratio2, $ignoreOrientation=false)
     {
@@ -529,11 +526,12 @@ class Image {
     }
 
     /************************************
-    /* GETTERS
+    /* 获取器 (GETTERS)
     /************************************
 
     /**
-     * Returns function names
+     * 获取图像处理函数名
+     * @return array 函数名数组
      */
     protected function getFunctionNames()
     {
@@ -605,7 +603,8 @@ class Image {
     }
 
     /**
-     * returns the image
+     * 获取图片路径
+     * @return string 图片路径
      */
     protected function getImage()
     {
@@ -629,8 +628,8 @@ class Image {
     }
 
     /**
-     * Gets width of image
-     * @return int
+     * 获取图片宽度
+     * @return int 宽度
      */
     public function getWidth()
     {
@@ -638,8 +637,8 @@ class Image {
     }
 
     /**
-     * Gets height of image
-     * @return int
+     * 获取图片高度
+     * @return int 高度
      */
     public function getHeight()
     {
@@ -647,8 +646,9 @@ class Image {
     }
 
     /**
-     * Gets type of image
-     * @return string
+     * 获取图片扩展名
+     * @param bool $withDot 是否包含点
+     * @return string 扩展名
      */
     public function getExtension($withDot=false)
     {
@@ -662,8 +662,8 @@ class Image {
     }
 
     /**
-     * Gets mime type of image
-     * @return string
+     * 获取图片 MIME 类型
+     * @return string MIME 类型
      */
     public function getMimeType()
     {
@@ -671,8 +671,8 @@ class Image {
     }
 
     /**
-     * Gets mime type of image
-     * @return string
+     * 获取图片类型
+     * @return string 图片类型
      */
     public function getType()
     {
@@ -680,8 +680,8 @@ class Image {
     }
 
     /**
-     * Get filesize
-     * @return string
+     * 获取文件大小 (字节)
+     * @return int 文件大小
      */
     public function getFileSizeInBytes()
     {
@@ -689,8 +689,8 @@ class Image {
     }
 
     /**
-     * Get filesize
-     * @return string
+     * 获取文件大小 (KB)
+     * @return float 文件大小
      */
     public function getFileSizeInKiloBytes()
     {
@@ -727,8 +727,8 @@ class Image {
     }
 
     /**
-     * Gets ratio width:height
-     * @return float
+     * 获取宽高比 (宽度:高度)
+     * @return float 宽高比
      */
     public function getRatioWidthToHeight()
     {
@@ -736,8 +736,8 @@ class Image {
     }
 
     /**
-     * Gets ratio height:width
-     * @return float
+     * 获取高宽比 (高度:宽度)
+     * @return float 高宽比
      */
     public function getRatioHeightToWidth()
     {
