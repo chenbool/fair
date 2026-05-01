@@ -1,39 +1,47 @@
 <?php
 namespace app\vendor;
+
 /**
- * Author:  Wenpeng
- * Email:   imwwp@outlook.com
- * Version: 1.0.0
+ * Curl 网络请求类
+ * 一个轻量级的网络操作类，实现GET、POST、UPLOAD、DOWNLOAD常用操作，支持链式写法
  *
- * https://github.com/wenpeng/curl
- * 一个轻量级的网络操作类，实现GET、POST、UPLOAD、DOWNLOAD常用操作，支持链式写法。
+ * 使用示例:
+ * $curl = new Curl(); 或者 $curl = Curl::init();
+ * $curl->url('目标网址');
+ * $curl->post('变量名', '变量值')->post('多维数组')->url('目标网址');
  *
- * $curl = new Curl;  或者  $curl = Curl::init();
- * $curl->url(目标网址);
- * $curl->post(变量名, 变量值)->post(多维数组)->url(目标网址);
- *
- *
- *任务结果状态
-    if ($curl->error()) {
-        echo $curl->message();
-    } else {
-        // 任务进程信息
-        $info = $curl->info();
-        
-        // 任务结果内容
-        $content = $curl->data();
-    }
- * 
+ * 任务结果状态:
+ * if ($curl->error()) {
+ *     echo $curl->message();
+ * } else {
+ *     $info = $curl->info();
+ *     $content = $curl->data();
+ * }
  */
-
-// namespace Wenpeng\Curl;
-
-// use Exception;
-
-class Curl {
+class Curl
+{
+    /**
+     * POST 数据
+     * @var array
+     */
     private $post;
+
+    /**
+     * 重试次数
+     * @var int
+     */
     private $retry = 0;
+
+    /**
+     * 自定义选项
+     * @var array
+     */
     private $custom = array();
+
+    /**
+     * 默认配置选项
+     * @var array
+     */
     private $option = array(
         'CURLOPT_HEADER'         => 0,
         'CURLOPT_TIMEOUT'        => 30,
@@ -44,15 +52,38 @@ class Curl {
         'CURLOPT_CONNECTTIMEOUT' => 10,
     );
 
+    /**
+     * 请求信息
+     * @var array
+     */
     private $info;
+
+    /**
+     * 返回数据
+     * @var string
+     */
     private $data;
+
+    /**
+     * 错误码
+     * @var int
+     */
     private $error;
+
+    /**
+     * 错误信息
+     * @var string
+     */
     private $message;
 
-    private static $instance;
-        
     /**
-     * Instance
+     * 单例实例
+     * @var Curl
+     */
+    private static $instance;
+
+    /**
+     * 获取单例实例
      * @return self
      */
     public static function init()
@@ -64,8 +95,7 @@ class Curl {
     }
 
     /**
-     * Task info
-     *
+     * 获取请求信息
      * @return array
      */
     public function info()
@@ -74,8 +104,7 @@ class Curl {
     }
 
     /**
-     * Result Data
-     *
+     * 获取返回数据
      * @return string
      */
     public function data()
@@ -84,9 +113,8 @@ class Curl {
     }
 
     /**
-     * Error status
-     *
-     * @return integer
+     * 获取错误状态
+     * @return int
      */
     public function error()
     {
@@ -94,8 +122,7 @@ class Curl {
     }
 
     /**
-     * Error message
-     *
+     * 获取错误信息
      * @return string
      */
     public function message()
@@ -104,9 +131,9 @@ class Curl {
     }
 
     /**
-     * Set POST data
-     * @param array|string  $data
-     * @param null|string   $value
+     * 设置 POST 数据
+     * @param array|string $data 数据
+     * @param string|null $value 值
      * @return self
      */
     public function post($data, $value = null)
@@ -126,11 +153,11 @@ class Curl {
     }
 
     /**
-     * File upload
-     * @param string $field
-     * @param string $path
-     * @param string $type
-     * @param string $name
+     * 文件上传
+     * @param string $field 字段名
+     * @param string $path 文件路径
+     * @param string $type 文件类型
+     * @param string $name 文件名
      * @return self
      */
     public function file($field, $path, $type, $name)
@@ -146,8 +173,8 @@ class Curl {
     }
 
     /**
-     * Save file
-     * @param string $path
+     * 保存内容到文件
+     * @param string $path 保存路径
      * @return self
      * @throws Exception
      */
@@ -166,8 +193,8 @@ class Curl {
     }
 
     /**
-     * Request URL
-     * @param string $url
+     * 设置请求 URL
+     * @param string $url 目标网址
      * @return self
      * @throws Exception
      */
@@ -180,15 +207,15 @@ class Curl {
     }
 
     /**
-     * Set option
-     * @param array|string  $item
-     * @param null|string   $value
+     * 设置选项
+     * @param array|string $item 选项
+     * @param string|null $value 值
      * @return self
      */
     public function set($item, $value = null)
     {
         if (is_array($item)) {
-            foreach($item as $key => $val){
+            foreach ($item as $key => $val) {
                 $this->custom[$key] = $val;
             }
         } else {
@@ -198,8 +225,8 @@ class Curl {
     }
 
     /**
-     * Set retry times
-     * @param int $times
+     * 设置重试次数
+     * @param int $times 重试次数
      * @return self
      */
     public function retry($times = 0)
@@ -209,8 +236,8 @@ class Curl {
     }
 
     /**
-     * Task process
-     * @param int $retry
+     * 处理请求
+     * @param int $retry 当前重试次数
      * @return self
      */
     private function process($retry = 0)
@@ -218,7 +245,7 @@ class Curl {
         $ch = curl_init();
 
         $option = array_merge($this->option, $this->custom);
-        foreach($option as $key => $val) {
+        foreach ($option as $key => $val) {
             if (is_string($key)) {
                 $key = constant(strtoupper($key));
             }
@@ -241,19 +268,20 @@ class Curl {
             $this->process($retry + 1);
         }
 
-        $this->post     = array();
-        $this->retry    = 0;
+        $this->post = array();
+        $this->retry = 0;
 
         return $this;
     }
 
     /**
-     * Convert array
-     * @param array  $input
-     * @param string $pre
+     * 转换数组格式
+     * @param array $input 输入数组
+     * @param string $pre 前缀
      * @return array
      */
-    private function convert($input, $pre = null){
+    private function convert($input, $pre = null)
+    {
         if (is_array($input)) {
             $output = array();
             foreach ($input as $key => $value) {

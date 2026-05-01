@@ -1,56 +1,60 @@
 <?php
-
-/**
- * 验证处理类
- * 
- * 可以进行POST、GET、REQUEST、自定义变量验证
- * 
- * @author Ken <695093513@qq.com>
- * @version 0.1
- */
-
 namespace validator;
 
-class validator {
-
+/**
+ * 验证器类
+ * 用于验证 POST、GET、REQUEST 等数据
+ *
+ * 使用示例:
+ * $input = ['username' => 'test', 'email' => 'test@test.com'];
+ * $rules = ['username' => 'required|min:3', 'email' => 'required|email'];
+ * $labels = ['username' => '用户名', 'email' => '邮箱'];
+ * validator::make($input, $rules, $labels, []);
+ * if (validator::fails()) {
+ *     $errors = validator::errors();
+ * }
+ */
+class validator
+{
+    /**
+     * 错误信息数组
+     * @var array
+     */
     public static $errors = array();
 
     /**
-     * 进行验证
-     * @param type $input
-     * @param type $rules
-     * @param type $messages
+     * 执行验证
+     * @param array $input 要验证的数据
+     * @param array $rules 验证规则
+     * @param array $labels 字段标签
+     * @param array $messages 自定义错误消息
      */
-    public static function make($input, $rules, $labels, $messages) {
-        //1、解析rules
+    public static function make($input, $rules, $labels, $messages)
+    {
         $newRules = self::resolveRules($rules);
 
-        //2、合并labels和rule
         foreach ($newRules as $key => $value) {
             if (isset($labels[$value['name']])) {
                 $newRules[$key]['attribute'] = $labels[$value['name']];
             }
         }
 
-        //3、校验rule是否存在并进行验证
         foreach ($newRules as $item) {
             foreach ($item['rule'] as $rule => $row) {
-                $classValidator = 'validator' . ucfirst($rule);
+                $classValidator = 'validator'.ucfirst($rule);
 
-                //动态加载
-                $validatorPath = dirname(__FILE__) . '/template/' . $classValidator . '.php';
+                $validatorPath = dirname(__FILE__).'/template/'.$classValidator.'.php';
                 if (!file_exists($validatorPath)) {
                     die("不存在的验证文件");
                 }
-                $namespace = 'validator\template\\' . $classValidator;
+                $namespace = 'validator\template\\'.$classValidator;
                 if (class_exists($namespace)) {
                     $name = $item['name'];
                     $attribute = $item['attribute'];
                     $param = $row;
-                    $msgName = $name . '.' . $rule;
+                    $msgName = $name.'.'.$rule;
                     $msg = isset($messages[$msgName]) ? $messages[$msgName] : '';
 
-                    //执行验证
                     $validator = new $namespace($name, $input[$name], $attribute, $param, $msg);
                     $result = $validator->run();
                     if ($result) {
@@ -65,9 +69,10 @@ class validator {
 
     /**
      * 获取所有错误消息
-     * @return type
+     * @return array|bool 错误数组或 false
      */
-    public static function errors() {
+    public static function errors()
+    {
         if (self::$errors) {
             return self::$errors;
         }
@@ -75,11 +80,12 @@ class validator {
     }
 
     /**
-     * 获取单个错误消息
-     * @param string $name
-     * @return type
+     * 获取单个字段的错误消息
+     * @param string $name 字段名
+     * @return array|bool 错误数组或 false
      */
-    public static function get($name) {
+    public static function get($name)
+    {
         if (isset(self::$errors[$name])) {
             return self::$errors[$name];
         }
@@ -87,10 +93,11 @@ class validator {
     }
 
     /**
-     * 获取第一个错误
-     * @return type
+     * 获取第一个错误消息
+     * @return string|bool 错误消息或 false
      */
-    public static function first() {
+    public static function first()
+    {
         if (self::$errors) {
             $firstError = reset(self::$errors);
             return $firstError[0];
@@ -99,11 +106,12 @@ class validator {
     }
 
     /**
-     * 判断某个参数是否具有错误
-     * @param type $name
-     * @return boolean
+     * 判断某个字段是否有错误
+     * @param string $name 字段名
+     * @return bool 是否有错误
      */
-    public static function has($name) {
+    public static function has($name)
+    {
         if (isset(self::$errors[$name])) {
             return true;
         }
@@ -111,9 +119,11 @@ class validator {
     }
 
     /**
-     * 判断验证是否成功
+     * 判断验证是否失败
+     * @return bool 是否失败
      */
-    public static function fails() {
+    public static function fails()
+    {
         if (self::$errors) {
             return true;
         }
@@ -121,24 +131,22 @@ class validator {
     }
 
     /**
-     * rule解析
+     * 解析验证规则
      * @param array $rules 规则数组
-     * @return array
+     * @return array 解析后的规则
      */
-    private static function resolveRules($rules) {
+    private static function resolveRules($rules)
+    {
         $newRules = array();
         foreach ($rules as $name => $item) {
             $param = array();
             $ruleArry = explode('|', $item);
 
-            //循环处理rule
             foreach ($ruleArry as $row) {
                 $newRow = explode(';', $row);
                 if (count($newRow) > 1) {
-                    //当数组大于1的时候，第一个值为rule名字，后面的为参数名字
                     $top = array_shift($newRow);
                     $param[$top] = array();
-                    //循环处理参数
                     foreach ($newRow as $value) {
                         $keyValue = explode('=', $value);
                         if (empty($keyValue[0]) || empty($keyValue[1])) {
@@ -147,11 +155,10 @@ class validator {
                         $param[$top][$keyValue[0]] = $keyValue[1];
                     }
                 } else {
-                    //只有一个值的时候，说明没有参数
                     $param[$row] = array();
                 }
             }
-            //重写组装为新数组
+
             $newRules[] = array(
                 'name' => $name,
                 'rule' => $param
@@ -160,5 +167,4 @@ class validator {
 
         return $newRules;
     }
-
 }

@@ -1,29 +1,23 @@
 <?php
 namespace app\vendor;
-/* ------------------------------------------------------------------------ */
-/* class.Images.php
-/* Eine Klasse, um mit Bildern rumzuhantieren
-/* A class to handle and manipulate images
-/* ------------------------------------------------------------------------ */
-/* Manuel Reinhard, manu@sprain.ch
-/* Twitter: @sprain
-/* Web: www.sprain.ch
-/* https://github.com/sprain/class.Images.php
 
-例子1:
-$image = new Image('../test/image1.png');
-$image->rotate(90);
-$image->resize(150,150,'crop'); 
-$image->display();
-
-例子2:
-$image = new Image('../test/image1.png');
-$image->rotate(90);
-$image->resize(150,150,'crop');
-$image->save("newFilename", "../test");
-$image->displayHTML();
-
-/* ------------------------------------------------------------------------ */
+/**
+ * 图像处理类
+ * 用于处理和操作图像，支持缩放、旋转、水印等操作
+ *
+ * 使用示例:
+ * $image = new Image('image.png');
+ * $image->rotate(90);
+ * $image->resize(150, 150, 'crop');
+ * $image->display();
+ *
+ * 或者:
+ * $image = new Image('image.png');
+ * $image->rotate(90);
+ * $image->resize(150, 150, 'crop');
+ * $image->save("newFilename", "../test");
+ * $image->displayHTML();
+ */
 
 class Image {
 
